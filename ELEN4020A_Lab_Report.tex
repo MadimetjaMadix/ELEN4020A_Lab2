@@ -1,0 +1,91 @@
+\documentclass[10pt,onecolumn]{article}
+\usepackage[utf8]{inputenc}
+ 
+\pagenumbering{arabic}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{adjustbox}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{tablefootnote}
+\usepackage{mathtools}
+\usepackage[margin=0.75in]{geometry} %This is for all the margins
+
+\def\@maketitle{%
+  \null
+  \vskip 2em%
+  \begin{center}%
+  \let \footnote \thanks
+    {\LARGE \@title \par}%
+    \vskip 1.5em%
+    {\large
+      \lineskip .5em%
+      \begin{tabular}[t]{c}% <------
+        \@author%            <------ Authors
+      \end{tabular}\par}%    <------
+    \vskip 1em%
+  %  {\large \@date}%
+  \end{center}%
+  \par
+  \vskip 1.5em}
+
+\date{25/02/2019}
+
+\title{\vspace{-2.2cm} \textbf{ELEN4020: Data Intensive Computing \\ Laboratory Exercise 1}}
+\author{\begin{tabular}{ll}
+  Lynch Mwaniki & 1043475 \\
+  Madimetja Sethosa & 1076467 \\
+  Teboho Matsheke & 1157717 \\
+\end{tabular}
+ }
+
+
+\begin{document}
+%\centering
+\title{\Large{\textbf{ ELEN4020: Data Intensive Computing \\ }}}
+
+\maketitle
+\thispagestyle{empty}\pagestyle{empty}
+\vspace{-8mm}
+
+
+
+\clearpage
+\appendix
+\label{App:Apendix}
+\section{Pseudo code}
+\subsection{allocateMatrix}
+    \begin{algorithm}[H]
+        \caption{Allocate Matrix in Memory}
+        \KwResult{Integer pointer, pointing to first element of matrix.}
+        \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+        \Input{Total Number of Elements}
+        result\_ptr = (int*)calloc(number\_of\_elements, sizeof(int)) \\
+        \Return result\_ptr
+    \end{algorithm}
+
+\subsection{getElementLocation2D}
+    \begin{algorithm}[H]
+        \caption{Get Location of Element in 2D matrix when represented as 1D Array}
+        \KwResult{Integer containing position of element in 1D matrix}
+        \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+        \Input{1D Array containing indexes}
+        \Input{Dimension N}
+        row = index[0]\\
+        column = index[1]\\
+        \Return $(row*N)+column$
+    \end{algorithm}
+  
+
+\subsection{retrieveElement2D}
+    \begin{algorithm}[H]
+        \caption{Retrieve Element from 2D matrix}
+        \KwResult{Integer value of the element in the 2D matrix co-ordinates.}
+        \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+        \Input{Pointer to matrix, 1D Array containing indexes}
+        \Input{Dimension N}
+        \Return $*(matrix\_ptr + getElementLocation2D(indexes, N))$
+    \end{algorithm}
+    
+\end{document}
