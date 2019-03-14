@@ -52,14 +52,6 @@ int *blockElementsIndex(int blockIndex, int N_matrix)
 	return blockElemIndex;
 }
 
-void swapBlocks(int *matrix, int *indexBlockA,int *indexBlockB)
-{
-	swapElements(matrix+indexBlockA[0],matrix+indexBlockA[0]);
-	swapElements(matrix+indexBlockA[1],matrix+indexBlockA[1]);
-	swapElements(matrix+indexBlockA[2],matrix+indexBlockA[2]);
-	swapElements(matrix+indexBlockA[3],matrix+indexBlockA[3]);
-}
-
 void swapElements(int* a, int* b)
 {
 	int temp = *a;
@@ -67,10 +59,19 @@ void swapElements(int* a, int* b)
 	*b = temp;
 }
 
+void swapBlocks(int *matrix, int *indexBlockA, int *indexBlockB)
+{	
+	swapElements(matrix+indexBlockA[0], matrix+indexBlockB[0]);
+	swapElements(matrix+indexBlockA[1], matrix+indexBlockB[1]);
+	swapElements(matrix+indexBlockA[2], matrix+indexBlockB[2]);
+	swapElements(matrix+indexBlockA[3], matrix+indexBlockB[3]);
+}
+
 void blockTranspose(int *matrix, int *indexBlockA)
 {
-	swapElements(matrix+indexBlockA[1],matrix+indexBlockA[2]);
+	swapElements(matrix+indexBlockA[1], matrix+indexBlockA[2]);
 }
+
 
 void print2DMatrix(int *matrix, int N)
 {
