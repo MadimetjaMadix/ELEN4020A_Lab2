@@ -39,6 +39,19 @@ int retrieveElement2D(int* matrix, int index[2], int N)
 	return *(matrix+getElementLocation2D(index, N));
 }
 
+int *blockElementsIndex(int blockIndex, int N_matrix)
+{	
+	int Num_Blocks = N_matrix/2;
+	int *blockElemIndex = (int*)calloc(4,sizeof(int));
+	
+	*blockElemIndex =  (blockIndex*2)+ ((int)(blockIndex/Num_Blocks))*N_matrix;
+	blockElemIndex[1]=*blockElemIndex+1; 
+	blockElemIndex[2]=*blockElemIndex+N_matrix;
+	blockElemIndex[3]=*blockElemIndex+(N_matrix+1);
+
+	return blockElemIndex;
+}
+
 void swapElements(int* a, int* b)
 {
 	int temp = *a;
