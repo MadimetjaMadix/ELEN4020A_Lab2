@@ -1,0 +1,285 @@
+\documentclass[10pt,onecolumn]{article}
+\usepackage[utf8]{inputenc}
+ 
+\pagenumbering{arabic}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{adjustbox}
+\usepackage{multirow}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{tablefootnote}
+\usepackage{mathtools}
+\usepackage[margin=0.75in]{geometry} %This is for all the margins
+
+\def\@maketitle{%
+  \null
+  \vskip 2em%
+  \begin{center}%
+  \let \footnote \thanks
+    {\LARGE \@title \par}%
+    \vskip 1.5em%
+    {\large
+      \lineskip .5em%
+      \begin{tabular}[t]{c}% <------
+        \@author%            <------ Authors
+      \end{tabular}\par}%    <------
+    \vskip 1em%
+  %  {\large \@date}%
+  \end{center}%
+  \par
+  \vskip 1.5em}
+
+\date{18/03/2019}
+
+\title{\vspace{-2.2cm} \textbf{ELEN4020A: Data Intensive Computing \\ Laboratory Exercise 2}}
+\author{\begin{tabular}{ll}
+  Lynch Mwaniki & 1043475 \\
+  Madimetja Sethosa & 1076467 \\
+  Teboho Matsheke & 1157717 \\
+\end{tabular}
+ }
+
+
+\begin{document}
+%\centering
+
+\maketitle
+\thispagestyle{empty}\pagestyle{empty}
+\vspace{-8mm}
+
+\section{In-Place Matrix Transposition}
+%
+In this lab, three different In-place matrix transposition algorithms are implemented and tested against each other: naive approach, Diagonal and Block transpose algorithms. The Diagonal and Block transposition algorithms are implemented using Pthreads and the OpenMP library. The naive approach is implemented serially and using threading by implementing it using the OpenMP library.
+%
+\section{Basic Algorithm}
+%
+This algorithm uses two nested for loops to transpose a 2D matrix. The outer and inner loops are used to iterate through the rows and columns of the matrix respectively. They iterate along the main diagonal. Each value is swapped with its corresponding transposed location, A[i, j] with A[j, i]. This process only needs to be applied to the either the top or bottom triangular half of the matrix.\\
+    ... place diagram
+%
+\section{Diagonal Transpose Algorithm}
+%
+....
+%
+\subsection{Pthreads}
+%
+...
+%
+\subsection{OpenMP}
+%
+...
+%
+\section{Block Transpose Algorithm}
+%
+....
+%
+\subsection{Pthreads}
+%
+...
+%
+\subsection{OpenMP}
+%
+...
+%
+%
+\section{Performance Comparison of different algorithms}
+\begin{table}[H]
+    \vspace{-0.5cm}
+    \centering
+    \caption{Results showing time taken to compute algorithms with 8 threads}
+    \begin{tabular}{|l|l|l|l|l|l|l|}
+    \hline
+    \multicolumn{7}{|c|}{\textbf{No. of threads = 8}} \\ \hline
+    \multirow{2}{*}{\textbf{$N_0$ = $N_1$}} & \multicolumn{1}{c|}{\textbf{Basic}} & \multicolumn{2}{c|}{\textbf{Pthreads}} & \multicolumn{3}{c|}{\textbf{OpenMP}} \\ \cline{2-7} 
+     & \textbf{} & \textbf{Diagonal} & \textbf{Blocked} & \textbf{Naive} & \textbf{Diagonal} & \textbf{Blocked} \\ \hline
+    \textbf{128} &  &  &  &  &  &  \\ \hline
+    \textbf{1024} &  &  &  &  &  &  \\ \hline
+    \textbf{2048} &  &  &  &  &  &  \\ \hline
+    \textbf{4096} &  &  &  &  &  &  \\ \hline
+    \end{tabular}
+\end{table}
+%
+\begin{table}[H]
+    \vspace{-0.5cm}
+    \centering
+    \caption{Results showing time taken to compute algorithms with 128 threads}
+    \begin{tabular}{|l|l|l|l|l|l|l|}
+    \hline
+    \multicolumn{7}{|c|}{\textbf{No. of threads = 128}} \\ \hline
+    \multirow{2}{*}{\textbf{$N_0$ = $N_1$}} & \multicolumn{1}{c|}{\textbf{Basic}} & \multicolumn{2}{c|}{\textbf{Pthreads}} & \multicolumn{3}{c|}{\textbf{OpenMP}} \\ \cline{2-7} 
+     & \textbf{} & \textbf{Diagonal} & \textbf{Blocked} & \textbf{Naive} & \textbf{Diagonal} & \textbf{Blocked} \\ \hline
+    \textbf{128} &  &  &  &  &  &  \\ \hline
+    \textbf{1024} &  &  &  &  &  &  \\ \hline
+    \textbf{2048} &  &  &  &  &  &  \\ \hline
+    \textbf{4096} &  &  &  &  &  &  \\ \hline
+    \end{tabular}
+\end{table}
+%
+\section{Analysis of Results}
+%
+%
+\section{Conclusion}
+%
+This report detailed three different matrix transposition algorithms implemented in the C programming language namely: Basic or naive approach, Diagonal and Block Transpose algorithms. The Diagonal and Block transposition algorithms were threaded and implemented using two different threading libraries namely: Pthreads and OpenMP. The Naive approach was also threaded using OpenMP. The algorithms were timed and the results were analyzed.
+%
+\clearpage
+\appendix
+\label{App:Apendix}
+\section{Pseudo code}
+\subsection{allocateMatrix}
+    \begin{algorithm}[H]
+        \caption{Allocate Matrix in Memory}
+        \KwResult{Integer pointer, pointing to first element of matrix.}
+        \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+        \Input{Total Number of Elements}
+        result\_ptr = (int*)calloc(number\_of\_elements, sizeof(int)) \\
+        \Return result\_ptr
+    \end{algorithm}
+%
+\subsection{getElementLocation2D}
+    \begin{algorithm}[H]
+        \caption{Get Location of Element in 2D matrix when represented as 1D Array}
+        \KwResult{Integer containing position of element in 1D matrix}
+        \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+        \Input{1D Array containing indexes}
+        \Input{Dimension N}
+        row = index[0]\\
+        column = index[1]\\
+        \Return $(row*N)+column$
+    \end{algorithm}
+ % 
+\subsection{retrieveElement2D}
+    \begin{algorithm}[H]
+        \caption{Retrieve Element from 2D matrix}
+        \KwResult{Integer value of the element in the 2D matrix co-ordinates.}
+        \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+        \Input{Pointer to matrix, 1D Array containing indexes}
+        \Input{Dimension N}
+        \Return $*(matrix\_ptr + getElementLocation2D(indexes, N))$
+    \end{algorithm}
+%
+\subsection{Basic Algorithm}
+%
+\begin{algorithm}[H]
+    \caption{Transpose a square 2D Matrix using Naive Approach in Serial execution}
+    \KwResult{A 2D square transposed matrix}
+    \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+    \Input{Pointer to matrix}
+    \Input{Matrix Size N}
+    \For{ i = 0 to N - 1}
+    {
+        \For{ j = 0 to N-1}
+        {
+            temp = matrix element indexed at i and j \\
+            matrix element at i and j position = matrix element indexed at j and i position\\
+            matrix element indexed at j and i position = temp
+        }
+    }
+\end{algorithm}
+%
+\subsection{OpenMP Naive Transpose Algorithm}
+%
+\begin{algorithm}[H]
+    \caption{Transpose a square 2D Matrix using Naive Approach in Parallel execution}
+    \KwResult{A 2D square transposed matrix}
+    \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+    \Input{Pointer to matrix}
+    \Input{Matrix Size N}
+    set number of threads for OpenMP\\
+    create variables i, j and temp\\
+    \#pragma omp parallel shared(matrix) private(temp, i, j)\\
+    \#pragma omp for schedule(dynamic) nowait\\
+    \For{ i = 0 to N - 1}
+    {
+        \For{ j = i to N-1}
+        {
+            temp = matrix element indexed at i and j \\
+            matrix element at i and j position = matrix element indexed at j and i position \\
+            matrix element indexed at j and i position = temp
+        }
+    }
+\end{algorithm}
+%
+\subsection{OpenMP Diagonal Transpose Algorithm}
+%
+\begin{algorithm}[H]
+    \caption{Transpose a square 2D Matrix using Naive Approach in Parallel execution}
+    \KwResult{A 2D square transposed matrix}
+    \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+    \Input{Pointer to matrix}
+    \Input{Matrix Size N}
+    set number of threads for OpenMP\\
+    create variables diagonalIndex, j and temp\\
+    \#pragma omp parallel shared(matrix) private(temp, i, j)\\
+    \#pragma omp for schedule(dynamic) nowait\\
+    \For{ diagonalIndex = 0 to N - 2}
+    {
+        \For{ j = diagonalIndex + 1 to N-1}
+        {
+            temp = matrix element indexed at diagonalIndex and j \\
+            matrix element at diagonalIndex and j position = matrix element indexed at j and diagonalIndex position \\
+            matrix element indexed at j and diagonalIndex position = temp
+        }
+    }
+\end{algorithm}
+%
+\subsection{OpenMP Block Transpose Algorithm}
+%
+
+%
+\subsection{Pthread Diagonal Transpose Algorithm}
+%
+\begin{algorithm}[H]
+    \caption{Transpose a square 2D Matrix using Diagonal Algorithm}
+    \KwResult{A 2D square transposed matrix}
+    \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+    set number of threads for Pthreads\\
+    create global variable \textbf{nextDiagonal} and set it to number of threads \\
+    struct ThreadData{ int* matrix; int diagIndex;} \\
+    
+    \textbf{in main:} \\
+    Allocate memory for 2D matrix of size N and fill with random integers \\
+    Create 1D matrix of size number of Pthreads for storing structs of type ThreadData \\
+    Create pthread threads with number assigned above.\\
+    
+    \ForEach{thread}
+    {   
+        Assign threadData's matrix pointer to the 2D matrix created earlier.\\
+        Assign threadData's diagIndex to the number of the thread being created.\\
+        \While{true}
+        {
+            \For{ j = diagIndex + 1 to N - 1}
+            {
+                temp = matrix element indexed at diagIndex and j \\
+                matrix element at diagIndex and j position = matrix element indexed at j and diagIndex position \\
+                matrix element indexed at j and diagIndex position = temp
+            }
+            
+            Mutex Lock\\
+            %
+            \If{nextDiagonal == N - 1} {diagIndex = N - 1}
+            \Else
+            { 
+                diagnIndex = nextDiagonal \\
+                nextDiagonal = nextDiagonal + 1
+            }
+            %
+            Mutex Unlock\\
+            
+            \If{diagIndex == N - 1}{ break from while loop}
+        }
+        exit pthread
+    }
+    
+    \ForEach{thread}
+    {
+        Join thread and wait for other threads to exit and join
+    }
+\end{algorithm}
+%
+\subsection{Pthread Block Transpose Algorithm}
+%
+
+%
+\end{document}
