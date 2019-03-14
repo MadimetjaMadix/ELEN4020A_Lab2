@@ -52,6 +52,14 @@ int *blockElementsIndex(int blockIndex, int N_matrix)
 	return blockElemIndex;
 }
 
+void swapBlocks(int *matrix, int *indexBlockA,int *indexBlockB)
+{
+	swapElements(matrix+indexBlockA[0],matrix+indexBlockA[0]);
+	swapElements(matrix+indexBlockA[1],matrix+indexBlockA[1]);
+	swapElements(matrix+indexBlockA[2],matrix+indexBlockA[2]);
+	swapElements(matrix+indexBlockA[3],matrix+indexBlockA[3]);
+}
+
 void swapElements(int* a, int* b)
 {
 	int temp = *a;
