@@ -1,23 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <sys/time.h>
 #include <stdbool.h>
+#include <time.h>
+#include <sys/time.h>
 #include "functions.h"
 
-#define num_threads 5
+#define num_threads 8
 int next_Diag = 0;
-int N = 4096;
+
 pthread_mutex_t updateDiagLock; // synchronize updates of next diagonal
 
 typedef struct{
 	int diagIndex, ID;
 	int *matrix;
-}ThreadData;
+	int N;
+}ThreadDataDiagonal;
 
 void *diagonalAlg(void *arg)
 {
-	ThreadData* thread_data = (ThreadData*)arg;
+	ThreadDataDiagonal* thread_data = (ThreadDataDiagonal*)arg;
+	int N = thread_data->N;
 	while(true)
 	{
 		for(int j=thread_data->diagIndex+1; j<N; ++j)
@@ -31,13 +34,11 @@ void *diagonalAlg(void *arg)
 		}
 		
 		pthread_mutex_lock(&updateDiagLock);
-		if(next_Diag==N-1) thread_data->diagIndex = N-1;
-		else if(next_Diag < N-1) 
+		if(next_Diag < N-1) 
 		{
-			
 			thread_data->diagIndex = next_Diag;
 			++next_Diag;
-		}
+		} else thread_data->diagIndex = N-1;
 		pthread_mutex_unlock(&updateDiagLock);
 		
 		if(thread_data->diagIndex == N-1) break;
@@ -46,28 +47,36 @@ void *diagonalAlg(void *arg)
 	pthread_exit((void *) 0);	
 }
 
-int main()
+void printTimeElasped(struct timeval start, struct timeval end)
+{
+	double time_taken = (end.tv_sec - start.tv_sec) * 1e6; 
+    time_taken = (time_taken + (end.tv_usec -  start.tv_usec)) * 1e-6;
+	printf("\n------ Diagonal Algorithm ------\n");
+	printf("Total time taken by CPU: %f\n", time_taken);
+	printf("================================\n");
+
+}
+
+void runDiagonalAlgorithm(int* matrix, int N)
 {
 	struct timeval start, end;
-	int rc,i;
-	srand(time(0));
-	void *status;
+	int rc;
 	
-	int *matrixA = createMarix(N);
-	
+	// Create threads:
 	pthread_t threads[num_threads];
-	ThreadData threads_data[num_threads];
+	ThreadDataDiagonal threads_data[num_threads];
 	
 	next_Diag = (int)num_threads;
 	
 	//start timer
 	gettimeofday(&start, NULL);
 	
-	for(i=0; i<num_threads;++i)
+	for(int i=0; i < num_threads; ++i)
 	{
-		threads_data[i].ID = i;
+		threads_data[i].ID        = i;
 		threads_data[i].diagIndex = i;
-		threads_data[i].matrix = matrixA;
+		threads_data[i].matrix    = matrix;
+		threads_data[i].N         = N;
 		
 		rc = pthread_create(&threads[i], NULL, diagonalAlg, &threads_data[i]);
 		
@@ -78,15 +87,23 @@ int main()
 		}
 	}
 	
-	//printf("%d\n",i);
-	for(int j = 0; i < num_threads; ++j) pthread_join(threads[j], NULL);
+	for(int j = 0; j < num_threads; ++j) pthread_join(threads[j], NULL);
 	
 	//end timer
 	gettimeofday(&end, NULL);
-	double time_taken; 
-    time_taken = (end.tv_sec - start.tv_sec) * 1e6; 
-    time_taken = (time_taken + (end.tv_usec -  start.tv_usec)) * 1e-6;
-	printf("Total time taken by CPU: %f\n", time_taken  );
+	printTimeElasped(start, end);
+}
 
+int main()
+{
+	srand(time(NULL));
+	int N = 4096;
+	int *matrixA = createMarix(N);
+	
+	printf("No. of threads = %d \n", (int)num_threads);
+	
+	runDiagonalAlgorithm(matrixA, N);
+	
+	
 	return 0;
 }
