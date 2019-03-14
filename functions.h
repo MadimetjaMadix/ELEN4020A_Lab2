@@ -67,6 +67,11 @@ void swapElements(int* a, int* b)
 	*b = temp;
 }
 
+void blockTranspose(int *matrix, int *indexBlockA)
+{
+	swapElements(matrix+indexBlockA[1],matrix+indexBlockA[2]);
+}
+
 void print2DMatrix(int *matrix, int N)
 {
 	if(matrix != NULL)
