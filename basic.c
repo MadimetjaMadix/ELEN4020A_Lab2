@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <time.h>
 #include "functions.h"
 
 
 void naiveAlgorithm(int *matrix, int N)
 {
-	int temp = 0;
 	for(int i=0; i<N; ++i)
 	{
 		for(int j=i+1; j<N; ++j)
@@ -45,7 +45,10 @@ int main()
                               start.tv_usec)) * 1e-6;
 	printf("Total time taken by CPU: %f\n", time_taken  );
 
-
+	int x = 5;
+	int y = 8;
+	x = x + y++;
+	printf("%d",x);
 
 	return 0;
 
