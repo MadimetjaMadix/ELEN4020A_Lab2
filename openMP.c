@@ -5,13 +5,12 @@
 #include <time.h>
 #include "functions.h"
 
-
 void naiveAlgorithm(int *matrix, int N)
 {	
 	int i = 0;
 	int j = 0;
 	omp_set_num_threads(8);
-	#pragma omp parallel shared(i) private(j)
+	#pragma omp parallel private(i, j)
 	{
 		#pragma omp for schedule(auto) nowait
 		for(i=0; i<N; ++i)
@@ -34,7 +33,7 @@ int main()
 {
 	struct timeval start, end;
 	
-	int N = 128;
+	int N = 6;
 	srand(time(NULL));
 	
 	int *matrixA = createMarix(N);
