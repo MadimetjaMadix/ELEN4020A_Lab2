@@ -257,11 +257,6 @@ void *blockTransposeAlg2(void *arg)
 			
 			if(j!=thread_data->diagIndex)
 			{
-				int index[2] = {thread_data->diagIndex,j};
-				int blockAIndex = getElementLocation2D(index, N_blocks);
-				int *blockAElementsIndex = blockElementsIndex( blockAIndex, N);
-				blockTranspose(thread_data->matrix, blockAElementsIndex);
-
 				index[0] = j;
 				index[1] = thread_data->diagIndex;		
 
