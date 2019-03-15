@@ -28,6 +28,18 @@ int getElementLocation2D(int index[2], int N)
 	return ((row*N)+column);
 }
 
+/* 	
+	When the matrix is spilt into blocks of size 2x2, a function was needed 
+	to map a 2D index of a block to a 1D index.
+	This function returns the mapped position in the 1D array indexing for a 
+	2x2 block located at a 2D index.
+*/
+int getBlockLocation2D(int index[2], int N_matrix)
+{
+	int N_blocks = N_matrix/2;
+	return getElementLocation2D(index, N_blocks);
+}
+
 /*
 	This function returns the value stored in the element at the specified index.
 	index is a 1D array with to elements. It contains the desired row and the 
@@ -39,6 +51,8 @@ int retrieveElement2D(int* matrix, int index[2], int N)
 	return *(matrix+getElementLocation2D(index, N));
 }
 
+
+
 int *blockElementsIndex(int blockIndex, int N_matrix)
 {	
 	int Num_Blocks = N_matrix/2;
@@ -49,6 +63,17 @@ int *blockElementsIndex(int blockIndex, int N_matrix)
 	blockElemIndex[2]=*blockElemIndex+N_matrix;
 	blockElemIndex[3]=*blockElemIndex+(N_matrix+1);
 
+	return blockElemIndex;
+}
+
+
+/*
+	Retrieves all the elements in a 2x2 block.Given a 2D index.
+*/
+int *blockElementsIndex2(int index[2], int N_matrix)
+{
+	int blockIndex      = getBlockLocation2D(index, N_matrix); 
+	int *blockElemIndex = blockElementsIndex(blockIndex, N_matrix);
 	return blockElemIndex;
 }
 
