@@ -239,14 +239,12 @@ void runBlockTransposeAlgorithm(int* matrix, int N)
 typedef struct{
 	int diagIndex, ID;
 	int *matrix;
-	int N,blockID,row;
-	bool isDoneBlocktransposition;
+	int N,blockID;
 }ThreadDataBlock2;
 
 int next_DiagBlock = 0;
-int next_row = 0;
 pthread_mutex_t updateDiagBlockLock; // synchronize updates of next block diagonal
-pthread_mutex_t updateRowBlockLock; // synchronize updates of next block Row
+
 
 void *blockTransposeAlg2(void *arg)
 {
@@ -255,24 +253,35 @@ void *blockTransposeAlg2(void *arg)
 	int N_blocks = N/2;
 	
 	//swap blocks
-	while(thread_data->isDoneBlocktransposition != true)
+	while(true)
 	{
-		for(int j=thread_data->diagIndex+1; j<N_blocks; ++j)
+		for(int j=thread_data->diagIndex; j<N_blocks; ++j)
 		{
 			int index[2] = {thread_data->diagIndex,j};
 			int blockAIndex = getElementLocation2D(index, N_blocks);
 			int *blockAElementsIndex = blockElementsIndex( blockAIndex, N);
+			blockTranspose(thread_data->matrix, blockAElementsIndex);
+			
+			if(j!=thread_data->diagIndex)
+			{
+				int index[2] = {thread_data->diagIndex,j};
+				int blockAIndex = getElementLocation2D(index, N_blocks);
+				int *blockAElementsIndex = blockElementsIndex( blockAIndex, N);
+				blockTranspose(thread_data->matrix, blockAElementsIndex);
 
-			index[0] = j;
-			index[1] = thread_data->diagIndex;		
+				index[0] = j;
+				index[1] = thread_data->diagIndex;		
 
 
-			int blockBIndex = getElementLocation2D(index, N_blocks);
-			int *blockBElementsIndex = blockElementsIndex( blockBIndex, N);
+				int blockBIndex = getElementLocation2D(index, N_blocks);
+				int *blockBElementsIndex = blockElementsIndex( blockBIndex, N);
+				blockTranspose(thread_data->matrix, blockBElementsIndex);
 
-			swapBlocks(thread_data->matrix, blockAElementsIndex, blockBElementsIndex);
+				swapBlocks(thread_data->matrix, blockAElementsIndex, blockBElementsIndex);
+				
+				free(blockBElementsIndex);
+			}
 			free(blockAElementsIndex);
-			free(blockBElementsIndex);
 		}//end for
 		
 		pthread_mutex_lock(&updateDiagBlockLock);
@@ -283,42 +292,9 @@ void *blockTransposeAlg2(void *arg)
 		} else thread_data->diagIndex = N_blocks-1;
 		pthread_mutex_unlock(&updateDiagBlockLock);
 		
-		if(thread_data->diagIndex == N_blocks-1 && (!thread_data->isDoneBlocktransposition))
-		{
-			thread_data->isDoneBlocktransposition = true;
-			break;
-			
-		}//end if
-
-	}
-	//swap within blocks
-	while(thread_data->isDoneBlocktransposition == true)
-	{
-
-		for(int r = 0; r<N_blocks; ++r)
-		{
-			int index[2] = {thread_data->row,r};
-			int blockAIndex = getElementLocation2D(index, N_blocks);
-			int *blockAElementsIndex = blockElementsIndex( blockAIndex, N);
-
-			blockTranspose(thread_data->matrix, blockAElementsIndex);
-			free(blockAElementsIndex);
-		}
+		if(thread_data->diagIndex == N_blocks-1)break;
 		
-		pthread_mutex_lock(&updateRowBlockLock);
-		if(next_row < N_blocks) 
-		{		
-				thread_data->row = next_row;
-				++next_row;
-				
-		} else thread_data->row = N_blocks;
-		pthread_mutex_unlock(&updateRowBlockLock);
-		
-		if(thread_data->row == N_blocks) break;
-		
-		//break;
-	
-	}
+	}//while
 	
 	pthread_exit((void *) 0);	
 }
@@ -333,7 +309,6 @@ void runBlockTransposeAlgorithm2(int* matrix, int N)
 	ThreadDataBlock2 threads_data[num_threads];
 	
 	next_DiagBlock = (int)num_threads;
-	next_row = (int)num_threads;
 	//start timer
 	gettimeofday(&start, NULL);
 	
@@ -344,8 +319,6 @@ void runBlockTransposeAlgorithm2(int* matrix, int N)
 		threads_data[i].matrix    = matrix;
 		threads_data[i].N         = N;
 		threads_data[i].blockID	  = i;
-		threads_data[i].row		  = i;
-		threads_data[i].isDoneBlocktransposition = false;
 		
 		rc = pthread_create(&threads[i], NULL, blockTransposeAlg2, &threads_data[i]);
 		
@@ -367,7 +340,7 @@ void runBlockTransposeAlgorithm2(int* matrix, int N)
 int main()
 {
 	srand(time(NULL));
-	int N = 4096;
+	int N = 8192;
 	printf("No. of threads = %d \n", (int)num_threads);
 	
 	int *matrixA = createMarix(N);
