@@ -72,9 +72,8 @@ int *blockElementsIndex(int blockIndex, int N_matrix)
 */
 int *blockElementsIndex2(int index[2], int N_matrix)
 {
-	int blockIndex      = getBlockLocation2D(index, N_matrix); 
-	int *blockElemIndex = blockElementsIndex(blockIndex, N_matrix);
-	return blockElemIndex;
+	int blockIndex = getBlockLocation2D(index, N_matrix); 
+	return blockElementsIndex(blockIndex, N_matrix);
 }
 
 void swapElements(int* a, int* b)

@@ -108,12 +108,28 @@ typedef struct
 int number_of_assigned_blocks       = 0;
 int next_block_column               = 0;
 int next_block_diagonal	            = 0;
-pthread_mutex_t updateBlockDiagonalLock;
-
+pthread_mutex_t computeNextBlockLock;
 
 /*
 	Function implementing block transposition.
 */
+void computeNextBlock(int N)
+{
+	++next_block_column;
+	int N_block = N/2;
+	if(next_block_column % N_block == 0 && next_block_column != 0)
+	{
+		++next_block_diagonal;
+		next_block_column = next_block_diagonal;	
+	}
+
+	if(next_block_diagonal >= N_block && next_block_column >= N_block)
+	{
+		next_block_diagonal = N_block;
+		next_block_column = N_block;
+	}else number_of_assigned_blocks++;
+}
+
 void* blockAlgorithm(void* arg)
 {
 	ThreadDataBlock* thread_data = (ThreadDataBlock*)arg;
@@ -124,38 +140,30 @@ void* blockAlgorithm(void* arg)
 		int index[2] = {thread_data->row, thread_data->column};
 		int* blockA_indexes = blockElementsIndex2(index, N);
 		blockTranspose(thread_data->matrix, blockA_indexes);
+		
 		if(thread_data->row != thread_data->column) // Not On diagonal:
 		{
-			swapElements(index, index+1);
+			index[0] = thread_data->column;
+			index[1] = thread_data->row;
+			
 			int* blockB_indexes = blockElementsIndex2(index, N);
 			blockTranspose(thread_data->matrix, blockB_indexes);
 			
 			// Swap blocks:
 			swapBlocks(thread_data->matrix, blockA_indexes, blockB_indexes);
 			
-			free(blockA_indexes);
 			free(blockB_indexes);
 		}
+		free(blockA_indexes);
 		
-		pthread_mutex_lock(&updateBlockDiagonalLock);
+		pthread_mutex_lock(&computeNextBlockLock);
 		
 			thread_data->row    = next_block_diagonal;
 			thread_data->column = next_block_column;
 
-			++next_block_column;
-			if(next_block_column % N_block == 0 && next_block_column != 0)
-			{
-				++next_block_diagonal;
-				next_block_column = next_block_diagonal;	
-			}
-	
-			if(next_block_diagonal >= N_block && next_block_column >= N_block)
-			{
-				next_block_diagonal = N_block;
-				next_block_column = N_block;
-			}else number_of_assigned_blocks++;
+			computeNextBlock(N);
 			
-		pthread_mutex_unlock(&updateBlockDiagonalLock);
+		pthread_mutex_unlock(&computeNextBlockLock);
 		
 		if(thread_data->row == N_block && thread_data->column == N_block) break;
 	}
@@ -174,22 +182,7 @@ void runBlockTransposeAlgorithm(int* matrix, int N)
 	ThreadDataBlock threads_data[num_threads];
 	
 	for(int i = 0; i < (int)num_threads; ++i)
-	{
-	
-		int N_block = N/2;
-		++next_block_column;
-		if(next_block_column % N_block == 0 && next_block_column != 0)
-		{
-			++next_block_diagonal;
-			next_block_column = next_block_diagonal;	
-		}
-	
-		if(next_block_diagonal >= N_block && next_block_column >= N_block)
-		{
-			next_block_diagonal = N_block;
-			next_block_column = N_block;
-		}else number_of_assigned_blocks++;
-	}
+		computeNextBlock(N);
 	
 	//start timer
 	gettimeofday(&start, NULL);
