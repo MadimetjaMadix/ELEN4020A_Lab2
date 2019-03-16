@@ -60,7 +60,7 @@ This algorithm uses two nested for loops to transpose a 2D matrix. The outer and
 %
 \section{Diagonal Transpose Algorithm}
 %
-....
+This algorithm 
 %
 \subsection{Pthreads}
 %
@@ -169,7 +169,7 @@ This report detailed three different matrix transposition algorithms implemented
     \Input{Matrix Size N}
     \For{ i = 0 to N - 1}
     {
-        \For{ j = 0 to N-1}
+        \For{ j = i to N-1}
         {
             temp = matrix element indexed at i and j \\
             matrix element at i and j position = matrix element indexed at j and i position\\
@@ -252,8 +252,14 @@ This report detailed three different matrix transposition algorithms implemented
             \For{ j = diagIndex + 1 to N - 1}
             {
                 temp = matrix element indexed at diagIndex and j \\
-                matrix element at diagIndex and j position = matrix element indexed at j and diagIndex position \\
-                matrix element indexed at j and diagIndex position = temp
+                get blockA element indices\\
+                transpose elements within blockA\\
+                \If{j!=diagIndex}{
+                    temp = matrix element indexed at j and diagIndex\\
+                    get blockB element indices\\
+                    transpose elements within blockB\\
+                    transpose blockA and blockB
+                }
             }
             
             Mutex Lock\\
@@ -280,6 +286,55 @@ This report detailed three different matrix transposition algorithms implemented
 %
 \subsection{Pthread Block Transpose Algorithm}
 %
-
+\begin{algorithm}[H]
+    \caption{Transpose a square 2D Matrix using Block Transpose Algorithm}
+    \KwResult{A 2D square transposed matrix}
+    \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+    set number of threads for Pthreads\\
+    create global variable \textbf{nextDiagBlock} \\
+    struct ThreadData{ int* matrix; int diagIndex;} \\
+    
+    \textbf{in main:} \\
+    Allocate memory for 2D matrix of size N and fill with random integers \\
+    Create 1D matrix of the size of number Pthreads for storing structs of type ThreadData \\
+    Create pthread threads with number assigned above.\\
+    Calculate the number of blocks (N\_blocks)\\
+    \ForEach{thread}
+    {   
+        Assign threadData's matrix pointer to the 2D matrix created earlier.\\
+        Assign threadData's diagIndex to the number of the thread being created.\\
+        \While{true}
+        {
+            \For{ j = diagIndex to N\_blocks}
+            {
+                temp = matrix element indexed at diagIndex and j \\
+                get blockA element indices using the blockElementsIndex function\\
+                transpose the elements in blockA\\
+                \If{j!=diagIndex}{
+                    temp = matrix element indexed at j and diagIndex\\
+                    get blockB element indices using the blockElementsIndex function\\
+                    transpose the elements in blockB\\
+                    
+                    transpose blockA and blockB using the swapBlocks() function.
+                }
+            }
+            
+            Mutex Lock\\
+            %
+            \If{nextDiagBlock $<$ N\_blocks - 1} {diagIndex =nextDiagBlock++;}
+            \Else{diagIndex=N\_blocks - 1}
+            %
+            Mutex Unlock\\
+            
+            \If{diagIndex == N\_blocks - 1}{ break from while loop}
+        }
+        exit pthread
+    }
+    
+    \ForEach{thread}
+    {
+        Join thread and wait for other threads to exit and join
+    }
+\end{algorithm}
 %
 \end{document}
