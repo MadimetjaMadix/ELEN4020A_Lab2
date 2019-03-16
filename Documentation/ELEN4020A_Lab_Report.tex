@@ -72,7 +72,7 @@ Each thread diagonal index is used to iterate through the rows and columns of th
 %
 \subsection{OpenMP}
 %
-...
+This implementation follows from the basic algorithm in that it uses two nested for loops to transpose a 2D matrix. The outer and inner loops are used to iterate through the rows via the main diagonal and columns of the matrix respectively. The two nested for loops are enclosed in a parallel section with their respective indexing variables made private. To ensure that the threads don't interchangeably transpose elements that have already been transposed and that they don't wait for others to finish executing, an auto schedule with a nowait instruction is instituted.
 %
 \section{Block Transpose Algorithm}
 %
