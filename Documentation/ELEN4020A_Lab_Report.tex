@@ -60,11 +60,15 @@ This algorithm uses two nested for loops to transpose a 2D matrix. The outer and
 %
 \section{Diagonal Transpose Algorithm}
 %
-This algorithm 
+This algorithm transposes the matrix elements by going along the major diagonal. As with the basic algorithm, each value is swapped with its corresponding transposed location, A[i, j] with A[j, i]. The openMP and pthread methods are implemented as follows: 
 %
 \subsection{Pthreads}
 %
-...
+In implementing pthreads for the diagonal algorithm, we define a struct, ThreadDataDiagonal, with the following properties: diagonal Index, pointer to matrix, ID. We then define or set the number of threads to be used to 8 because of the .... In order to keep track of the row/column to be transposed, a global variable, nextDiagonal, is defined.\\
+
+Each thread diagonal index is used to iterate through the rows and columns of the matrix while transposing the corresponding elements. Upon completion of this, a mutex lock section is created whereby, if the thread diagonal index is less than size of the matrix -1, it is set to nextDiagonal, thereafter nextDiagonal is incremented by one. Otherwise, the the thread diagonal index is set to size of the matrix -1 at which point the thread will be terminated. 
+
+
 %
 \subsection{OpenMP}
 %
@@ -157,6 +161,34 @@ This report detailed three different matrix transposition algorithms implemented
         \Input{Pointer to matrix, 1D Array containing indexes}
         \Input{Dimension N}
         \Return $*(matrix\_ptr + getElementLocation2D(indexes, N))$
+    \end{algorithm}
+%
+ % 
+\subsection{blockElementsIndex}
+    \begin{algorithm}[H]
+        \caption{Retrieve block Elements indices}
+        \KwResult{4 index values of a block in the matrix}
+        \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+        \Input{blockIndex, Dimension N}
+        Num\_Blocks = N/2\\
+        *blockElemIndex =  (blockIndex*2)+ ((int)(blockIndex/Num\_Blocks))*N;\\
+	    blockElemIndex[1]=*blockElemIndex+1; \\
+	    blockElemIndex[2]=*blockElemIndex+N;\\
+	    blockElemIndex[3]=*blockElemIndex+(N+1);\\
+        \Return $blockElemIndex$
+    \end{algorithm}
+%
+ % 
+\subsection{swapBlocks}
+    \begin{algorithm}[H]
+        \caption{transpose two blocks}
+        \KwResult{block transposed *matrix}
+        \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+        \Input{*matrix, *blockA, *blockB}
+        swapElements(matrix+indexBlockA[0], matrix+indexBlockB[0]);\\
+	swapElements(matrix+indexBlockA[1], matrix+indexBlockB[1]);\\
+	swapElements(matrix+indexBlockA[2], matrix+indexBlockB[2]);\\
+	swapElements(matrix+indexBlockA[3], matrix+indexBlockB[3]);\\
     \end{algorithm}
 %
 \subsection{Basic Algorithm}
