@@ -114,4 +114,16 @@ void print2DMatrix(int *matrix, int N)
 	}else printf(" The Matrix is empty");
 	
 }
+
+void printMatrixSize(int N)
+{
+	printf("\n=========================================");
+	printf("=====================================\n\n");
+	printf("                                    ");
+	printf("N=%d", N);
+	printf("                                                   \n");
+	printf("=========================================");
+	printf("=====================================\n");
+} 
+
 #endif
