@@ -103,7 +103,6 @@ typedef struct
 	int* matrix;
 }ThreadDataBlock;
 
-int number_of_assigned_blocks       = 0;
 int next_block_column               = 0;
 int next_block_diagonal	            = 0;
 pthread_mutex_t computeNextBlockLock;
@@ -125,7 +124,7 @@ void computeNextBlock(int N)
 	{
 		next_block_diagonal = N_block;
 		next_block_column = N_block;
-	}else number_of_assigned_blocks++;
+	}
 }
 
 void* blockAlgorithm(void* arg)
