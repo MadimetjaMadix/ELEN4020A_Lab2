@@ -10,6 +10,7 @@ void printTimeElasped(double start, double end)
 {
 	double time_taken = end - start; 
 	printf(" %8f", time_taken);
+	return;
 }
 
 void naiveAlgorithm(int *matrix, int N)
@@ -112,11 +113,10 @@ void printTableHeadings()
 	return;
 }
 
-
 void runTransposeAlgorithms(int N)
 {
 	int *matrixA = createMarix(N);
-	printf("%4d ", N);
+	printf("%4d|", N);
 	naiveAlgorithm(matrixA,N);
 	diagonalAlgorithm(matrixA, N);
 	blockTransposeAlg(matrixA, N);
@@ -129,6 +129,7 @@ int main()
 {
 	srand(time(NULL));
 	printHeader();
+	printf("\nOpenMP Algorithms Parallel");
 	printf("\nNumber of threads: %d \n", (int)num_threads);
 	printTableHeadings();
 	runTransposeAlgorithms(128);

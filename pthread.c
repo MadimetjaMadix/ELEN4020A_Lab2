@@ -52,8 +52,7 @@ void printTimeElasped(struct timeval start, struct timeval end)
 {
 	double time_taken = (end.tv_sec - start.tv_sec) * 1e6; 
     time_taken = (time_taken + (end.tv_usec -  start.tv_usec)) * 1e-6;
-	printf("Total time taken by CPU: %f\n", time_taken);
-	printf("================================\n");
+	printf(" %8f", time_taken);
 
 }
 
@@ -91,7 +90,6 @@ void runDiagonalAlgorithm(int* matrix, int N)
 	
 	//end timer
 	gettimeofday(&end, NULL);
-	printf("\n------ Diagonal Algorithm ------\n");
 	printTimeElasped(start, end);
 }
 
@@ -222,7 +220,6 @@ void runBlockTransposeAlgorithm(int* matrix, int N)
 	
 	//end timer
 	gettimeofday(&end, NULL);
-	printf("\n------ Block Algorithm 1------\n");
 	printTimeElasped(start, end);
 	
 	return;
@@ -321,22 +318,39 @@ void runBlockTransposeAlgorithm2(int* matrix, int N)
 	
 	//end timer
 	gettimeofday(&end, NULL);
-	printf("\n------ Block Algorithm 2------\n");
 	printTimeElasped(start, end);
+}
+
+void printTableHeadings()
+{
+	printf("\n%5s %8s %8s %8s\n", "N   |" , "Diagonal", "Block 1", "Block 2");
+	return;
+}
+
+void runTransposeAlgorithms(int N)
+{
+	int *matrixA = createMarix(N);
+	printf("%4d|", N);
+	runDiagonalAlgorithm(matrixA, N);
+	runBlockTransposeAlgorithm(matrixA, N);
+	runBlockTransposeAlgorithm2(matrixA, N);
+	printf("\n");
+	free(matrixA);
+	return;
 }
 
 int main()
 {
 	srand(time(NULL));
-	int N = 8192;
-	printf("No. of threads = %d \n", (int)num_threads);
-	
-	int *matrixA = createMarix(N);
-	
-	runDiagonalAlgorithm(matrixA, N);
-	runBlockTransposeAlgorithm(matrixA, N);
-	runBlockTransposeAlgorithm2(matrixA, N);
 
-	free(matrixA);
+	printHeader();
+	printf("\nPThread Algorithms Parallel");
+	printf("\nNumber of threads: %d\n", (int)num_threads);
+	printTableHeadings();
+	runTransposeAlgorithms(128);
+	runTransposeAlgorithms(1024);
+	runTransposeAlgorithms(2048);
+	runTransposeAlgorithms(4096);
+
 	return 0;
 }

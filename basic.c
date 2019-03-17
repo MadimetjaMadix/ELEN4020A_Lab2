@@ -34,15 +34,16 @@ void naiveAlgorithm(int *matrix, int N)
 void runTransposeAlgorithm(int N)
 {
 	int *matrixA = createMarix(N);
+	printf("%4d|", N);
 	naiveAlgorithm(matrixA, N);
-
+	printf("\n");
 	free(matrixA);
 	return;
 }
 
 void printTableHeadings()
 {
-	printf("\n%5s %10d %12d %10d %10d \n%8s", "N | " , 128, 1024, 2048, 4096, " ");
+	printf("\n%5s %9s\n", "N  |", "Time");
 	return;
 }
 
@@ -51,7 +52,7 @@ int main()
 	srand(time(NULL));
 
 	printHeader();
-	printf("\nNumber of threads (Serial): %d", 1);
+	printf("\n Basic Algorithm Serial");
 	printTableHeadings();
 	
 	runTransposeAlgorithm(128);

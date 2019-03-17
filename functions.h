@@ -115,15 +115,17 @@ void print2DMatrix(int *matrix, int N)
 	
 }
 
-void printMatrixSize(int N)
+void printHeader()
 {
-	printf("\n=========================================");
-	printf("=====================================\n\n");
-	printf("                                    ");
-	printf("N=%d", N);
-	printf("                                                   \n");
-	printf("=========================================");
-	printf("=====================================\n");
-} 
+	printf("       * ELEN4020A Data Intensive Computing: Laboratory 2 * \n");
+    printf("       ****************************************************\n");
+    printf("             +--------------------+----------------+ \n");
+    printf("             |    Student Name    | Student Number | \n");
+    printf("             +--------------------+----------------+ \n");
+    printf("             | Lynch Mwaniki      |        1043475 | \n");
+    printf("             | Madimetja Sethosa  |        1076467 | \n");
+    printf("             | Teboho Matsheke    |        1157717 | \n");
+    printf("             +--------------------+----------------+ \n");
+}
 
 #endif
