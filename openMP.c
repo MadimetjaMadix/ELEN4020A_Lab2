@@ -36,7 +36,7 @@ void naiveAlgorithm(int *matrix, int N)
 		}
 	}
 	end = omp_get_wtime();
-	printf("\n------ OpenMP Naive Algorithm ------\n");
+	printf("\n------ OpenMP Naive Transpose Algorithm ------\n");
 	printTimeElasped(start, end);
 	return;
 }
@@ -66,9 +66,48 @@ void diagonalAlgorithm(int* matrix, int N)
 		}
 	}
 	end = omp_get_wtime();
-	printf("\n------ OpenMP Diagonal Algorithm ------\n");
+	printf("\n------ OpenMP Diagonal Transpose Algorithm ------\n");
 	printTimeElasped(start, end);
 	return;
+}
+
+void blockTransposeAlg(int *matrix, int N)
+{
+	double start = 0.0, end = 0.0;
+	int N_blocks = N/2,i,j;
+	
+	start = omp_get_wtime();
+	omp_set_num_threads(num_threads);
+	#pragma omp parallel private(i,j)
+	{
+		#pragma omp for schedule(dynamic)
+		for(i=0; i<N_blocks; ++i)
+		{
+			for(j=0; j<N_blocks; ++j)
+			{
+				int index[2] = {i,j};
+				int *blockAElementsIndex = blockElementsIndex2( index, N);
+				blockTranspose(matrix, blockAElementsIndex);
+		
+				if(j!=i)
+				{
+					index[0] = j;
+					index[1] = i;		
+
+					int *blockBElementsIndex = blockElementsIndex2( index, N);
+					blockTranspose(matrix, blockBElementsIndex);
+
+					swapBlocks(matrix, blockAElementsIndex, blockBElementsIndex);
+					free(blockBElementsIndex);
+				}
+				free(blockAElementsIndex);
+			}
+		}
+	}
+	end = omp_get_wtime();
+	printf("\n------ OpenMP Block Transpose Algorithm ------\n");
+	printTimeElasped(start, end);
+			
 }
 
 void runTransposeAlgorithms(int N)
@@ -78,6 +117,7 @@ void runTransposeAlgorithms(int N)
 	printf("\nNumber of threads: %d", (int)num_threads);
 	naiveAlgorithm(matrixA,N);
 	diagonalAlgorithm(matrixA, N);
+	blockTransposeAlg(matrixA, N);
 	
 	free(matrixA);
 	return;
@@ -90,5 +130,6 @@ int main()
 	runTransposeAlgorithms(1024);
 	runTransposeAlgorithms(2048);
 	runTransposeAlgorithms(4096);
+	runTransposeAlgorithms(8192);
 	return 0;
 }
