@@ -9,8 +9,7 @@
 void printTimeElasped(double start, double end)
 {
 	double time_taken = end - start; 
-	printf("Total time taken by CPU: %f\n", time_taken);
-	printf("================================\n");
+	printf(" %8f", time_taken);
 }
 
 void naiveAlgorithm(int *matrix, int N)
@@ -36,7 +35,6 @@ void naiveAlgorithm(int *matrix, int N)
 		}
 	}
 	end = omp_get_wtime();
-	printf("\n------ OpenMP Naive Transpose Algorithm ------\n");
 	printTimeElasped(start, end);
 	return;
 }
@@ -66,7 +64,6 @@ void diagonalAlgorithm(int* matrix, int N)
 		}
 	}
 	end = omp_get_wtime();
-	printf("\n------ OpenMP Diagonal Transpose Algorithm ------\n");
 	printTimeElasped(start, end);
 	return;
 }
@@ -105,20 +102,25 @@ void blockTransposeAlg(int *matrix, int N)
 		}
 	}
 	end = omp_get_wtime();
-	printf("\n------ OpenMP Block Transpose Algorithm ------\n");
 	printTimeElasped(start, end);
 			
 }
 
+void printTableHeadings()
+{
+	printf("\n%5s %8s %8s %8s \n", "N   |" , "Naive", "Diagonal", "Block");
+	return;
+}
+
+
 void runTransposeAlgorithms(int N)
 {
-	printMatrixSize(N);
 	int *matrixA = createMarix(N);
-	printf("\nNumber of threads: %d", (int)num_threads);
+	printf("%4d ", N);
 	naiveAlgorithm(matrixA,N);
 	diagonalAlgorithm(matrixA, N);
 	blockTransposeAlg(matrixA, N);
-	
+	printf("\n");
 	free(matrixA);
 	return;
 }
@@ -126,10 +128,12 @@ void runTransposeAlgorithms(int N)
 int main()
 {
 	srand(time(NULL));
+	printHeader();
+	printf("\nNumber of threads: %d \n", (int)num_threads);
+	printTableHeadings();
 	runTransposeAlgorithms(128);
 	runTransposeAlgorithms(1024);
 	runTransposeAlgorithms(2048);
 	runTransposeAlgorithms(4096);
-	runTransposeAlgorithms(8192);
 	return 0;
 }
