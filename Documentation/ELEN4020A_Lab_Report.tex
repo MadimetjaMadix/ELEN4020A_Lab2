@@ -64,7 +64,7 @@ This algorithm uses two nested for loops to transpose a 2D matrix. The outer and
 %
 \section{OpenMP Naive Algorithm}
 %
-...
+This is a low level improvement of the basic algorithm. The OpenMP \emph{\#pragma} directives are used to parallelize the two nested for loops. The outer loop is used to iterate along the matrix's rows and the inner loop iterates along the columns. 
 %
 \section{Diagonal Transpose Algorithm}
 %
@@ -93,13 +93,13 @@ The Block Transpose Algorithm consists of three steps. The first step requires a
 %
 \subsection{Pthreads}
 %
-The block transposition algorithms implemented using this library .... . Two different approaches were implemented and are discussed in the sections that follow.
+The block transposition algorithms implemented using the \emph{pthread} library. Two different approaches were implemented and are discussed in the sections that follow.
 %
 \subsubsection{Algorithm 1}
 %
 This algorithm performs block transposition by traversing through the upper triangle of a matrix, as shown in Figure\,\ref{fig:TriangularTraversal}. When creating the threads a struct called \emph{ThreadDataBlock} is generated, with the following members: ID, row, column, matrix size and a pointer to the matrix, and assigned to each thread privately. The row and column are indices indicating the block to be worked on. Each thread is assigned a block along the path being traversed. If a thread is assigned a block on the diagonal, it will only transpose the relevant elements in that block. If a thread is assigned a non-diagonal block, it will transpose the elements in that block, interchange the indices, A[i, j] to A[j, i], and swap the corresponding block and finally swap the blocks. Once a thread has completed those steps, a \emph{Pthread\,Mutex\,Lock} section is reached.\\
 
-\noindent This section is needed to update two shared global variables named, \emph{next\_block\_diagonal} and \emph{next\_block\_column}. These variables contain the row and column of the next block that needs to be operated on. The thread saves $\emph{row} = \emph{next\_block\_diagonal}$ and $\emph{column} = \emph{next\_block\_column}$. After the thread saves the information, checks are performed to update the global indexing variables. This section checks that once the \emph{next\_block\_column} reaches the boundary, of the 2D matrix representing the blocks, the \emph{next\_block\_diagonal} is incremented by one and the \emph{next\_block\_column} is set as the value in \emph{next\_block\_diagonal}. The mutex is unlocked and the values row and column values for the thread are checked for boundary conditions. If the row and column received is equal to $matrix size - 1$, the thread will exit. The pseudo code code for this algorithm can be found in Appendix\,\ref{App:Apendix} Algorithm\,\ref{Alg:PThreadBlockAlgorithm1}.
+\noindent This section is needed to update two shared global variables named, \emph{next\_block\_diagonal} and \emph{next\_block\_column}. These variables contain the row and column of the next block that needs to be operated on. The thread saves $\emph{row} = \emph{next\_block\_diagonal}$ and $\emph{column} = \emph{next\_block\_column}$. After the thread saves the information, checks are performed to update the global indexing variables. This section checks that once the \emph{next\_block\_column} reaches the boundary, of the 2D matrix representing the blocks, the \emph{next\_block\_diagonal} is incremented by one and the \emph{next\_block\_column} is set as the value in \emph{next\_block\_diagonal}. The mutex is unlocked and the values row and column values for the thread are checked for boundary conditions. If the row and column received is equal to $matrix\_size - 1$, the thread will exit. The pseudo code code for this algorithm can be found in Appendix\,\ref{App:Apendix} Algorithm\,\ref{Alg:PThreadBlockAlgorithm1}.
 %
 \subsubsection{Algorithm 2}
 %
@@ -110,13 +110,14 @@ This algorithm performs block transposition by traversing through the upper tria
     \label{fig:BlockAlgorithm2ThreadAllocation}
 \end{figure}
 %
-\subsection{OpenMP}
+Similar to Algorithm 1, this algorithm traverses the upper triangle of the matrix, but instead of traversing the blocks lineally, they are traversed in a parallel format as shown in Figure \ref{fig:BlockAlgorithm2ThreadAllocation}. Threads are created and each is assigned to a row starting from the diagonal block. If the block assigned to the thread is on the diagonal, then the block is only transposed, else the adjacent block is calculated, transposed and then swapped. The firt thread to finish the row will lock the global variable \emph{diag\_index}, copy its value and update it. For a more logical flow of the algorithm, 
+\subsection{OpenMP block}
 %
-...
+ 
 %
 %
 \section{Performance Comparison of different algorithms}
-The seven algorithms implemented were run on matrix sizes N = 128, 1024, 2048, and 4096. The threaded algorithms were run on each size using 4 threads and 8 threads to gauge the performance of the algorithms. The algorithms were run on a desktop computer with the following specs: an Intel Core i7-6700 CPU with 8 cores running at 3.40GHz and 8 GB DDR3 RAM. No other programs were open to ensure that no other known process will slow down the algorithms. Ideally, the algorithms should have been run on a Linux machine with no desktop environment, but this was not available to the group. The results of the implemented algorithms can be seen in Tables\,\ref{tbl:Results4Threads}\,and\,\ref{tbl:Results8Threads}.
+The seven algorithms implemented were run on matrix sizes N = 128, 1024, 2048, and 4096. The threaded algorithms were run on each size using 4 threads and 8 threads to gauge the performance of the algorithms. The algorithms were run on a desktop computer with the following specs: an Intel Core i7-6700 CPU with 8\,cores running at 3.40\,GHz and 8\,GB DDR3\,RAM. No other programs were open to ensure that no other known process will slow down the algorithms. Ideally, the algorithms should have been run on a Linux machine with no desktop environment, but this was not available to the group. The results of the implemented algorithms can be seen in Tables\,\ref{tbl:Results4Threads}\,and\,\ref{tbl:Results8Threads}.
 %
 \begin{table}[H]
     \vspace{-0.5cm}
@@ -125,13 +126,13 @@ The seven algorithms implemented were run on matrix sizes N = 128, 1024, 2048, a
     \label{tbl:Results4Threads}
     \begin{tabular}{|l|l|l|l|l|l|l|l|}
     \hline
-    \multicolumn{8}{|c|}{\textbf{No. of threads = 4}} \\ \hline
-    \multirow{2}{*}{\textbf{$N_0$ = $N_1$}} & \multicolumn{1}{c|}{\textbf{Basic}} & \multicolumn{3}{c|}{\textbf{Pthreads}} & \multicolumn{3}{c|}{\textbf{OpenMP}} \\ \cline{2-8} 
-     & \textbf{} & \textbf{Diagonal} & \textbf{Blocked 1} & \textbf{Blocked 2} & \textbf{Naive} & \textbf{Diagonal} & \textbf{Blocked} \\ \hline
-    \textbf{128}  &  &  &  &  &  &  &  \\ \hline
-    \textbf{1024} &  &  &  &  &  &  &  \\ \hline
-    \textbf{2048} &  &  &  &  &  &  &  \\ \hline
-    \textbf{4096} &  &  &  &  &  &  &  \\ \hline
+    \multicolumn{7}{|c|}{\textbf{No. of threads = 4}} \\ \hline
+    \multirow{2}{*}{\textbf{$N_0$ = $N_1$}} & \multicolumn{3}{c|}{\textbf{Pthreads}} & \multicolumn{3}{c|}{\textbf{OpenMP}} \\ \cline{2-7} 
+    & \textbf{Diagonal} & \textbf{Blocked 1} & \textbf{Blocked 2} & \textbf{Naive} & \textbf{Diagonal} & \textbf{Blocked} \\ \hline
+    \textbf{128}  &0.001081  &0.002200  &0.000658  &0.000483  &0.000275  &0.000668  \\ \hline
+    \textbf{1024} &0.004056  &0.020829  &0.004910  &0.005325  &0.002941  &0.006797  \\ \hline
+    \textbf{2048} &0.020492  &0.027299  &0.028489  &0.031684  &0.021544  &0.032312  \\ \hline
+    \textbf{4096} &0.094026  &0.111373  &0.127449  &0.211720  &0.128334  &0.145914  \\ \hline
     \end{tabular}
 \end{table}
 %
@@ -142,23 +143,37 @@ The seven algorithms implemented were run on matrix sizes N = 128, 1024, 2048, a
     \label{tbl:Results8Threads}
     \begin{tabular}{|l|l|l|l|l|l|l|l|}
     \hline
-    \multicolumn{8}{|c|}{\textbf{No. of threads = 8}} \\ \hline
-    \multirow{2}{*}{\textbf{$N_0$ = $N_1$}} & \multicolumn{1}{c|}{\textbf{Basic}} & \multicolumn{3}{c|}{\textbf{Pthreads}} & \multicolumn{3}{c|}{\textbf{OpenMP}} \\ \cline{2-8} 
-     & \textbf{} & \textbf{Diagonal} & \textbf{Blocked 1} & \textbf{Blocked 2} & \textbf{Naive} & \textbf{Diagonal} & \textbf{Blocked} \\ \hline
-    \textbf{128}  &  &  &  &  &  &  &  \\ \hline
-    \textbf{1024} &  &  &  &  &  &  &  \\ \hline
-    \textbf{2048} &  &  &  &  &  &  &  \\ \hline
-    \textbf{4096} &  &  &  &  &  &  &  \\ \hline
+     \multicolumn{7}{|c|}{\textbf{No. of threads = 8}} \\ \hline
+    \multirow{2}{*}{\textbf{$N_0$ = $N_1$}} & \multicolumn{3}{c|}{\textbf{Pthreads}} & \multicolumn{3}{c|}{\textbf{OpenMP}} \\ \cline{2-7} 
+    & \textbf{Diagonal} & \textbf{Blocked 1} & \textbf{Blocked 2} & \textbf{Naive} & \textbf{Diagonal} & \textbf{Blocked} \\ \hline
+    \textbf{128}  &0.001106  &0.003101  &0.000669  &0.000671  &0.000155  &0.000489  \\ \hline
+    \textbf{1024} &0.002545  &0.023252  &0.003740  &0.004816  &0.002402  &0.004610  \\ \hline
+    \textbf{2048} &0.016938  &0.029786  &0.017196  &0.024770  &0.020085  &0.022922  \\ \hline
+    \textbf{4096} &0.081811  &0.118155  &0.073397  &0.133002  &0.115294  &0.093971  \\ \hline
     \end{tabular}
 \end{table}
 %
+\begin{table}[H]
+    \vspace{-0.5cm}
+    \centering
+    \caption{Results showing time taken to compute the Basic algorithm}
+    \label{tbl:Results8Threads}
+    \begin{tabular}{|c|c|}
+    \hline
+    $N_0$ = $N_1$ & Basic \\ \hline
+    \textbf{128}        &0.000320       \\ \hline
+    \textbf{1024}       &0.010438       \\ \hline
+    \textbf{2048}       &0.079379       \\ \hline
+    \textbf{4096}       &0.462447       \\ \hline
+    \end{tabular}
+\end{table}
 \section{Analysis of Results}
 %
-...
+Generally, the basic algorithm was out performed by all the other types of algorithms that were implemented. In table \ref{tbl:Results4Threads} where 4 threads were used for both the openMP and pthread methods, the diagonal algorithm performed better for the both implementations except for N\= 4096 (whereby the block algorithms performed better).  
 %
 \section{Conclusion}
 %
-This report detailed three different matrix transposition algorithms implemented in the C programming language namely: Basic or naive approach, Diagonal and Block Transpose algorithms. The Diagonal and Block transposition algorithms were threaded and implemented using two different threading libraries namely: Pthreads and OpenMP. The Naive approach was also threaded using OpenMP. The algorithms were timed and the results were analyzed.
+This report detailed three different matrix transposition algorithms implemented in the C programming language namely: Basic or naive approach, Diagonal and Block Transpose algorithms. The Diagonal and Block transposition algorithms were threaded and implemented using two different threading libraries namely: Pthreads and OpenMP. The Naive approach was also threaded using OpenMP. The algorithms were timed and the results were analyzed. It was discovered that the ... out performs ... for N $>$ x. 
 %
 \clearpage
 \appendix
@@ -309,11 +324,44 @@ This report detailed three different matrix transposition algorithms implemented
 %
 \subsection{OpenMP Block Transpose Algorithm}
 %
+\begin{algorithm}[H]
+   \label{Alg:OpenMPBlockAlgorithm2}
+    \caption{Transpose a square 2D Matrix using Block Transpose Algorithm}
+    \KwResult{A 2D square transposed matrix}
+    \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+    set number of threads for Pthreads\\
+    
+    \textbf{in main:} \\
+    Allocate memory for 2D matrix of size N and fill with random integers \\
+    Calculate the number of blocks (N\_blocks)\\
+    \ForEach{thread}
+    {   
+       \#pragma omp parallel private(i,j)
+        {
+        
+            \#pragma omp for schedule(dynamic)
+            {
+                \For{ j = diagIndex to N\_blocks}
+                {
+                    temp = matrix element indexed at diagIndex and j \\
+                    get blockA element indices using the blockElementsIndex function\\
+                    transpose the elements in blockA\\
+                    \If{j!=diagIndex}{
+                        temp = matrix element indexed at j and diagIndex\\
+                        get blockB element indices using the blockElementsIndex function\\
+                        transpose the elements in blockB\\
+                        
+                        transpose blockA and blockB using the swapBlocks() function.
+                    }
+            }
+            }
 
+        }
+    }
+\end{algorithm}
 %
 \subsection{Pthread Diagonal Transpose Algorithm}
 %
-
 \begin{algorithm}[H]
     \label{Alg:PthreadDiagonalTrans}
     \caption{Transpose a square 2D Matrix using Diagonal Algorithm}
