@@ -81,7 +81,7 @@ void blockTransposeAlg(int *matrix, int N)
 		#pragma omp for schedule(dynamic)
 		for(i=0; i<N_blocks; ++i)
 		{
-			for(j=0; j<N_blocks; ++j)
+			for(j=i; j<N_blocks; ++j)
 			{
 				int index[2] = {i,j};
 				int *blockAElementsIndex = blockElementsIndex2( index, N);
