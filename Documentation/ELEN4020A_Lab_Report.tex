@@ -93,7 +93,7 @@ The Block Transpose Algorithm consists of three steps. The first step requires a
 %
 \subsection{Pthreads}
 %
-The block transposition algorithms implemented using the \emph{pthread} library. Two different approaches were implemented and are discussed in the sections that follow.
+The block transposition algorithms were implemented using the \emph{pthread} library. Two different approaches were implemented and are discussed in the sections that follow.
 %
 \subsubsection{Algorithm 1}
 %
@@ -110,7 +110,7 @@ This algorithm performs block transposition by traversing through the upper tria
     \label{fig:BlockAlgorithm2ThreadAllocation}
 \end{figure}
 %
-Similar to Algorithm 1, this algorithm traverses the upper triangle of the matrix, but instead of traversing the blocks lineally, they are traversed in a parallel format as shown in Figure \ref{fig:BlockAlgorithm2ThreadAllocation}. Threads are created and each is assigned to a row starting from the diagonal block. If the block assigned to the thread is on the diagonal, then the block is only transposed, else the adjacent block is calculated, transposed and then swapped. The firt thread to finish the row will lock the global variable \emph{diag\_index}, copy its value and update it. For a more logical flow of the algorithm, 
+Similar to Algorithm 1, this algorithm traverses the upper triangle of the matrix, but instead of traversing the blocks lineally, they are traversed in a parallel format as shown in Figure \ref{fig:BlockAlgorithm2ThreadAllocation}. Threads are created and each is assigned to a row starting from the diagonal block. If the block assigned to the thread is on the diagonal, then the block is only transposed, else the adjacent block is calculated, transposed and then swapped. The firt thread to finish the row will lock the global variable \emph{diag\_index}, copy its value and update it. For a more logical flow of the algorithm, the seudo code is provided in Appendix \ref{App:Apendix}, A \ref{Alg:OpenMPBlockAlgorithm2}. 
 \subsection{OpenMP block}
 %
  
@@ -173,7 +173,7 @@ Generally, the basic algorithm was out performed by all the other types of algor
 %
 \section{Conclusion}
 %
-This report detailed three different matrix transposition algorithms implemented in the C programming language namely: Basic or naive approach, Diagonal and Block Transpose algorithms. The Diagonal and Block transposition algorithms were threaded and implemented using two different threading libraries namely: Pthreads and OpenMP. The Naive approach was also threaded using OpenMP. The algorithms were timed and the results were analyzed. It was discovered that the ... out performs ... for N $>$ x. 
+This report detailed three different matrix transposition algorithms implemented in the C programming language namely: Basic or naive approach, Diagonal and Block Transpose algorithms. The Diagonal and Block transposition algorithms were threaded and implemented using two different threading libraries namely: Pthreads and OpenMP. The Naive approach was also threaded using OpenMP. The algorithms were timed and the results were analyzed. It was discovered that the pthreads algorithm 2 out performs the rest of the algorithms for N $>$ x. 
 %
 \clearpage
 \appendix
