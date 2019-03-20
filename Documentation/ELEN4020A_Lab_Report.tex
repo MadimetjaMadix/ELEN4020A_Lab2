@@ -110,14 +110,14 @@ This algorithm performs block transposition by traversing through the upper tria
     \label{fig:BlockAlgorithm2ThreadAllocation}
 \end{figure}
 %
-Similar to Algorithm 1, this algorithm traverses the upper triangle of the matrix, but instead of traversing the blocks lineally, they are traversed in a parallel format as shown in Figure \ref{fig:BlockAlgorithm2ThreadAllocation}. Threads are created and each is assigned to a row starting from the diagonal block. If the block assigned to the thread is on the diagonal, then the block is only transposed, else the adjacent block is calculated, transposed and then swapped. The firt thread to finish the row will lock the global variable \emph{diag\_index}, copy its value and update it. For a more logical flow of the algorithm, the seudo code is provided in Appendix \ref{App:Apendix}, A \ref{Alg:OpenMPBlockAlgorithm2}. 
+Similar to Algorithm 1, this algorithm traverses the upper triangle of the matrix, but instead of traversing the blocks lineally, they are traversed in a parallel format as shown in Figure \ref{fig:BlockAlgorithm2ThreadAllocation}. Threads are created and each is assigned to a row starting from the diagonal block. If the block assigned to the thread is on the diagonal, then the block is only transposed, else the adjacent block is calculated, transposed and then swapped. The first thread to finish the row will lock the global variable \emph{diag\_index}, copy its value and update it. For a more logical flow of the algorithm, the pseudo code is provided in Appendix\,\ref{App:Apendix} Algorithm\,\ref{Alg:OpenMPBlockAlgorithm2}. 
 \subsection{OpenMP block}
 %
- 
+This implementation follows that of pthread algorithm 2. It makes use of two nested for loops to transpose a 2D matrix. The first for loop is for traversing the diagonal index, where else the second on is for traversing the blocks in each row. The algorithm makes use of \emph{\#progma omp parallel} with the indices of the two for loops being private. The for loop is made parallel with the schedule set to dynamic, this makes sure that each thread executes a chunk of iterations and then requires another chunk of iteration until there is no chunk remaining. The pseudo code is provided in Appendix\,\ref{App:Apendix},\ref{Alg:OpenMPBlockAlgorithm2}.
 %
 %
 \section{Performance Comparison of different algorithms}
-The seven algorithms implemented were run on matrix sizes N = 128, 1024, 2048, and 4096. The threaded algorithms were run on each size using 4 threads and 8 threads to gauge the performance of the algorithms. The algorithms were run on a desktop computer with the following specs: an Intel Core i7-6700 CPU with 8\,cores running at 3.40\,GHz and 8\,GB DDR3\,RAM. No other programs were open to ensure that no other known process will slow down the algorithms. Ideally, the algorithms should have been run on a Linux machine with no desktop environment, but this was not available to the group. The results of the implemented algorithms can be seen in Tables\,\ref{tbl:Results4Threads}\,and\,\ref{tbl:Results8Threads}.
+The seven algorithms implemented were run on matrix sizes N = 128, 1024, 2048, and 4096. The threaded algorithms were run on each size using 4 threads and 8 threads to gauge the performance of the algorithms. The algorithms were run on a desktop computer with the following specs: an Intel Core i7-6700 CPU with 8\,cores running at 3.40\,GHz and 8\,GB DDR3\,RAM. No other programs were open to ensure that no other known process will slow down the algorithms. Ideally, the algorithms should have been run on a Linux machine with no desktop environment, but this was not available to the group. The results of the implemented algorithms can be seen in Table\,\ref{tbl:Results4Threads}\,-\,\ref{tbl:ResultBasic}.
 %
 \begin{table}[H]
     \vspace{-0.5cm}
@@ -157,7 +157,7 @@ The seven algorithms implemented were run on matrix sizes N = 128, 1024, 2048, a
     \vspace{-0.5cm}
     \centering
     \caption{Results showing time taken to compute the Basic algorithm}
-    \label{tbl:Results8Threads}
+    \label{tbl:ResultBasic}
     \begin{tabular}{|c|c|}
     \hline
     $N_0$ = $N_1$ & Basic \\ \hline
